@@ -209,9 +209,14 @@ class VRPDriver(NetworkDriver):
                 break
 
         # get serial_number,due to the stack have multiple SN, so show it in a list
-        # 由于堆叠设备会有多少个SN，所以这里用列表展示
-        re_sn = r"ESN\s+of\s+slot\s+\S+\s+(?P<serial_number>\S+)"
-        serial_number = re.findall(re_sn, show_esn, flags=re.M)
+        # 由于堆叠设备会有多少个SN，所以这里用列表
+        if show_esn:
+            re_sn = r"ESN\s+of\s+slot\s+\S+\s+(?P<serial_number>\S+)"
+            serial_number = re.findall(re_sn, show_esn, flags=re.M)
+        else:
+            show_dev_manufacture = self.device.send_command('display device manufacture-info')
+            re_sn_dev = r"\d\s+-\s+(?P<serial_number>\S+)"
+            serial_number = re.findall(re_sn_dev, show_dev_manufacture, flags=re.M)
 
         if 'sysname ' in show_hostname:
             _, hostname = show_hostname.split("sysname ")
